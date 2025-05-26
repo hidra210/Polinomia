@@ -117,17 +117,22 @@ mostrarNumero d =
     in if m == 1 then show n else "(" ++ show n ++ "/" ++ show m ++ ")"
 
 instance Show (Polinomio Double) where
-    show PolCero = "0"
-    show (ConsPol 0 b PolCero) = mostrarNumero b
-    show (ConsPol 0 b p) = mostrarNumero b ++ " + " ++ show p
-    show (ConsPol 1 b PolCero) = mostrarNumero b ++ "*x"
-    show (ConsPol 1 b p) = mostrarNumero b ++ "*x + " ++ show p
-    show (ConsPol n 1.0 PolCero) = "x^" ++ show n
-    show (ConsPol n 1.0 p) = "x^" ++ show n ++ " + " ++ show p
-    show (ConsPol n (-1.0) PolCero) = "-x^" ++ show n
-    show (ConsPol n (-1.0) p) = "-x^" ++ show n ++ " + " ++ show p
-    show (ConsPol n b PolCero) = mostrarNumero b ++ "*x^" ++ show n
-    show (ConsPol n b p) = mostrarNumero b ++ "*x^" ++ show n ++ " + " ++ show p
+    show = mostrar . toLista
+      where
+        mostrar [] = "0"
+        mostrar terms =
+            let filtrados = filter (\(_, c) -> abs c > 1e-6) terms
+                textos = map mostrarTermino filtrados
+            in if null textos then "0" else intercalate " + " textos
+
+        mostrarTermino (0, c) = mostrarNumero c
+        mostrarTermino (1, 1.0) = "x"
+        mostrarTermino (1, -1.0) = "-x"
+        mostrarTermino (1, c) = mostrarNumero c ++ "*x"
+        mostrarTermino (n, 1.0) = "x^" ++ show n
+        mostrarTermino (n, -1.0) = "-x^" ++ show n
+        mostrarTermino (n, c) = mostrarNumero c ++ "*x^" ++ show n
+
 
 mostrarPolinomio :: Polinomio Double -> String
 mostrarPolinomio p = replaceExponents (limpiarSignos (show p))
@@ -181,7 +186,7 @@ gradoMax :: (Eq a, Num a) => PolinomioL a -> Int
 gradoMax (Pol cs) = length (dropWhile (== 0) (reverse cs)) - 1
 
 crearPolinomioL :: (Num a, Eq a) => [a] -> Polinomio a
-crearPolinomioL cs = foldr (\(i, c) acc -> pegarPol i c acc) PolCero (zip [n,n-1..0] cs)
+crearPolinomioL cs = foldl (\acc (i, c) -> ConsPol i c acc) PolCero (zip [0..] (reverse cs))
   where n = length cs - 1
 
 aPolinomioL :: (Num a, Eq a) => Polinomio a -> PolinomioL a
@@ -215,22 +220,21 @@ buscarRaicesEnteras p =
 factorizarPolinomio :: Polinomio Double -> ([Double], Polinomio Double)
 factorizarPolinomio p = factorizarAux p []
   where
-    posiblesRaices = posiblesRaicesDe p
-    factorizarAux q rs
-      | esPolCero q = (rs, PolCero)
-      | grado q == 0 = (rs, q)
+    factorizarAux PolCero acc = (acc, PolCero)
+    factorizarAux q acc
+      | grado q == 0 = (acc, q)
       | otherwise =
-          case find (\r -> abs (valor q r) < 1e-6) posiblesRaices of
-            Just r -> let (q', _) = dividirRuffini q r
-                      in factorizarAux q' (rs ++ [r])
-            Nothing -> (rs, q)
+          case find (\r -> abs (valor q r) < 1e-6) (buscarRaicesEnteras q) of
+            Just r  -> let (q', _) = dividirRuffini q r
+                       in factorizarAux q' (acc ++ [r])
+            Nothing -> (acc, q)
 
 posiblesRaicesDe :: Polinomio Double -> [Double]
 posiblesRaicesDe p = 
     let Pol coefs = aPolinomioL p
         a0 = last coefs
         an = head coefs
-        factoresA0 = if a0 == 0 then [] else factores (numerator (approxRational a0 1e-6))
+        factoresA0 = if a0 == 0 then [0] else factores (numerator (approxRational a0 1e-6))
         factoresAn = if an == 0 then [] else factores (numerator (approxRational an 1e-6))
         candidatos = nub [fromIntegral p / fromIntegral q | p <- factoresA0, q <- factoresAn]
     in (candidatos ++ map negate candidatos) \\ [0]
@@ -240,19 +244,29 @@ posiblesRaicesDe p =
 mostrarFactorizacion :: Polinomio Double -> String
 mostrarFactorizacion p =
     let (raices, resto) = factorizarPolinomio p
-        -- Formatear cada raíz correctamente
+        -- Verificar si 0 es raíz (para mostrar "x" como factor)
+        tieneRaizCero = 0 `elem` raices
+        raicesSinCero = filter (/= 0) raices
+        
+        -- Formatear factores
         factores = concatMap (\r -> 
                     let signo = if r < 0 then "+" else "-"
                         abs_r = abs r
                     in "(x " ++ signo ++ " " ++ mostrarNumero abs_r ++ ")"
-                  ) raices
+                  ) raicesSinCero
+        
+        -- Añadir "x" como factor si corresponde
+        factoresConX = if tieneRaizCero 
+                       then "x" ++ (if null factores then "" else " * " ++ factores)
+                       else factores
+        
         restoLegible = mostrarPolinomio resto
         restoStr = if esPolCero resto || restoLegible `elem` ["1", "1.0"]
                   then ""
                   else " * (" ++ restoLegible ++ ")"
     in if null raices 
        then mostrarPolinomio p 
-       else factores ++ restoStr
+       else factoresConX ++ restoStr
 
 integrar :: (Fractional a, Eq a) => Polinomio a -> Polinomio a
 integrar PolCero = PolCero

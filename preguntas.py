@@ -3,6 +3,140 @@ from tkinter import messagebox
 import respuesta
 import random
 
+# Colores de los botones de cada operación
+OPERACIONES = [
+    "Raíces",
+    "Dividir",
+    "Derivar",
+    "Integrar",
+    "Factorizar",
+    "Evaluar"
+]
+COLORES = ["#FF8C42", "#FFE816", "#6BCB77", "#4D96FF", "#DD4EBE", "#FF6B6B"]
+COLOR_MAPA = dict(zip(OPERACIONES, COLORES))
+
+
+# Respuestas incorrectas predefinidas por tipo de operación
+RESPUESTAS_INCORRECTAS = {
+    "Derivar": [
+        "3x² + 2x + 1", "4x³ - 3x", "2x + 5", "6x² - 2x + 3",
+        "x³ + 4x² - 2", "5x⁴ - 3x² + 7", "2x - 1", "4x³ + 6x² - 1",
+        "x² - 4x + 4", "7x³ + x - 5", "6x⁴ - x² + 2x", "3x² + x", 
+        "5x³ + 2x² + 4", "2x² - 5", "8x - 3", "x³ + 6x"
+    ],
+    "Integrar": [
+        "x³ + x²", "0.5x⁴ - x²", "2x³ + 3x", "x²/2 + 3x", "x⁴/4 - x³/3",
+        "3x² + 5x", "x³/3 + 2x²", "4x³ - 2x² + x", "x⁵/5 + x³/3",
+        "0.25x⁴ - x² + 2x", "x² + 3x", "x³ + x²", "x⁴ - 2x³ + x", 
+        "x³ - x²", "3x⁴ - 2x²", "1.5x³ + x² + x"
+    ],
+    "Dividir": [
+        "Cociente: x² + 2x + 1\nResto: 0.0", "Cociente: 2x - 3\nResto: 1.0",
+        "Cociente: x³ - x\nResto: 2.0", "Cociente: x + 4\nResto: -1.0",
+        "Cociente: x² - 2x + 3\nResto: 0.0", "Cociente: 3x + 2\nResto: 5.0",
+        "Cociente: x² + x - 1\nResto: 3.0", "Cociente: 2x² - x + 4\nResto: -2.0",
+        "Cociente: x² + 4x + 4\nResto: 1.0", "Cociente: x³ + x²\nResto: -2.0",
+        "Cociente: x + 1\nResto: 0.5", "Cociente: 4x² + x - 3\nResto: 2.5",
+        "Cociente: x² - 5x + 6\nResto: 0", "Cociente: 2x + 1\nResto: -1.0",
+        "Cociente: x³ - x² + 2x\nResto: 1", "Cociente: x² + 1\nResto: 0.0"
+    ]
+}
+
+def obtener_respuestas_incorrectas(operacion, respuesta_correcta, grado=0):
+    if operacion == "Evaluar":
+        incorrectas = set()
+        intentos = 0
+        respuesta_correcta_str = str(respuesta_correcta)
+        while len(incorrectas) < 3 and intentos < 20:
+            num = random.randint(-100, 100)
+            opcion = f"{float(num):.1f}"
+            if opcion != respuesta_correcta_str:
+                incorrectas.add(opcion)
+            intentos += 1
+        opciones = list(incorrectas)
+        opciones.insert(random.randint(0, 3), respuesta_correcta_str)
+        return opciones
+
+
+    if operacion == "Raíces":
+        incorrectas = set()
+        intentos = 0
+
+        try:
+            # Asegurarse de que la respuesta correcta es una lista de enteros ordenada
+            raices_correctas = sorted(int(float(r)) for r in eval(str(respuesta_correcta)))
+            respuesta_correcta_str = str(raices_correctas)
+        except Exception as e:
+            print("Error procesando raíces correctas:", e)
+            return [str(respuesta_correcta), "[0]", "[1]", "[2]"]
+
+        grado = len(raices_correctas)
+
+        while len(incorrectas) < 3 and intentos < 100:
+            raices = sorted(random.sample(range(-9, 10), grado))
+            propuesta = str(raices)
+            if propuesta != respuesta_correcta_str:
+                incorrectas.add(propuesta)
+            intentos += 1
+
+        opciones = list(incorrectas)
+        opciones.insert(random.randint(0, 3), respuesta_correcta_str)
+        return opciones
+
+
+    if operacion == "Factorizar":
+        try:
+            num_factores = grado
+            incorrectas = set()
+            intentos = 0
+            while len(incorrectas) < 3 and intentos < 50:
+                raices = list({random.randint(-6, 6) for _ in range(num_factores)})
+                if len(raices) < num_factores:
+                    continue  # Evitar repetidos
+
+                tiene_x = 0 in raices
+                otras_raices = sorted(r for r in raices if r != 0)
+
+                factores = []
+                if tiene_x:
+                    factores.append("x")
+                for r in otras_raices:
+                    if r > 0:
+                        factores.append(f"(x - {r})")
+                    else:
+                        factores.append(f"(x + {abs(r)})")
+
+                propuesta = "".join(factores)
+                if propuesta != respuesta_correcta:
+                    incorrectas.add(propuesta)
+                intentos += 1
+
+            opciones = list(incorrectas)
+            opciones.insert(random.randint(0, 3), respuesta_correcta)
+            return opciones
+
+        except Exception as e:
+            print("Error generando factorizaciones falsas:", e)
+
+    # Default (Derivar, Integrar, Dividir)
+    pool = RESPUESTAS_INCORRECTAS.get(operacion, [])
+    if len(pool) < 3:
+        pool += [f"Opción incorrecta {i+1}" for i in range(3 - len(pool))]
+
+    incorrectas = []
+    intentos = 0
+    while len(incorrectas) < 3 and intentos < 10:
+        candidata = random.choice(pool)
+        if candidata != respuesta_correcta and candidata not in incorrectas:
+            incorrectas.append(candidata)
+        intentos += 1
+
+    opciones = incorrectas.copy()
+    opciones.insert(random.randint(0, 3), respuesta_correcta)
+    return opciones
+
+
+
 def centrar_ventana(ventana, ancho, alto):
     ventana.update_idletasks()
     x = (ventana.winfo_screenwidth() - ancho) // 2
@@ -28,13 +162,25 @@ def mostrar_pregunta(operacion, parent_window):
              font=("Helvetica", 14), bg="#F4F4F4").pack(pady=15)
 
     if operacion == "Raíces":
-        pregunta = "Encuentra una raíz entera del polinomio:"
-        respuesta_correcta = resultados.get('raices', 'No se encontraron raíces enteras')
+        pregunta = "Encuentra las raíces del polinomio:"
+        raices_crudas = resultados.get('raices', [])
+        # Normaliza como lista de enteros ordenados, convertida en string
+        try:
+            raices_enteras = sorted(int(float(r)) for r in eval(str(raices_crudas)))
+            respuesta_correcta = str(raices_enteras)
+        except Exception as e:
+            print("Error formateando raíces:", e)
+            respuesta_correcta = str(raices_crudas)
     elif operacion == "Dividir":
         divisor = resultados.get('divisor', 0)
-        pregunta = f"Divide el polinomio por (x - {divisor}) usando Ruffini:"
+        if divisor < 0:
+            divisor_str = f"+ {abs(int(divisor))}" if divisor == int(divisor) else f"+ {abs(divisor)}"
+        else:
+            divisor_str = f"- {int(divisor)}" if divisor == int(divisor) else f"- {divisor}"
+
+        pregunta = f"Divide el polinomio por (x {divisor_str}) usando Ruffini:"
+
         respuesta_correcta = (
-            f"Divisor: (x - {divisor})\n"
             f"Cociente: {resultados.get('cociente', '?')}\n"
             f"Resto: {resultados.get('resto', '?')}"
         )
@@ -51,6 +197,9 @@ def mostrar_pregunta(operacion, parent_window):
         x = resultados.get('x', 0)
         pregunta = f"Evalúa el polinomio en x = {x}:"
         respuesta_correcta = resultados.get('evaluacion', '?')
+    else:
+        pregunta = "¿Cuál es el resultado?"
+        respuesta_correcta = "?"
 
     tk.Label(frame_principal, text=pregunta, font=("Helvetica", 16, "bold"), 
              bg="#F4F4F4").pack(pady=20)
@@ -58,80 +207,41 @@ def mostrar_pregunta(operacion, parent_window):
     frame_respuestas = tk.Frame(frame_principal, bg="#F4F4F4")
     frame_respuestas.pack(pady=30)
 
-    respuestas = [respuesta_correcta]
+    grado = resultados.get("grado", 0)
+    respuestas = obtener_respuestas_incorrectas(operacion, respuesta_correcta, grado)
 
-    if operacion == "Raíces":
-        respuestas.extend([str(random.randint(-10, 10)) for _ in range(3)])
-    elif operacion in ["Derivar", "Integrar"]:
-        respuestas += [resultados['polinomio'], "0", "1"]
-    elif operacion == "Evaluar":
-        try:
-            valor_correcto = float(resultados['evaluacion'])
-            incorrectas = set()
+    color_base = COLOR_MAPA.get(operacion, "#CCCCCC")
 
-            while len(incorrectas) < 3:
-                modificador = random.uniform(1, 3)
-                tipo = random.choice(["+", "-", "*"])
-                if tipo == "+":
-                    valor = round(valor_correcto + modificador, 2)
-                elif tipo == "-":
-                    valor = round(valor_correcto - modificador, 2)
-                else:
-                    valor = round(valor_correcto * (1 + modificador / 10), 2)
-
-                if round(valor, 2) != round(valor_correcto, 2):
-                    incorrectas.add(str(valor))
-
-            respuestas += list(incorrectas)
-
-        except (ValueError, KeyError):
-            respuestas += ["Opción incorrecta 1", "Opción incorrecta 2", "Opción incorrecta 3"]
-    else:
-        respuestas += ["Opción incorrecta 1", "Opción incorrecta 2", "Opción incorrecta 3"]
-
-    random.shuffle(respuestas)
-
-    botones_respuesta = []
     for i, opcion in enumerate(respuestas):
-        if opcion == respuesta_correcta:
-            btn = tk.Button(
-                frame_respuestas, 
-                text=f"Respuesta: {opcion}", 
-                font=("Helvetica", 14),
-                bg="#6BCB77",
-                fg="white",
-                padx=20,
-                pady=10,
-                command=lambda r=opcion: mostrar_respuesta_correcta(r, ventana)
-            )
-        else:
-            btn = tk.Button(
-                frame_respuestas, 
-                text="Respuesta incorrecta", 
-                font=("Helvetica", 14),
-                bg="#FF6B6B",
-                fg="white",
-                padx=20,
-                pady=10,
-                command=lambda v=ventana: mostrar_respuesta_incorrecta(v)
-            )
-        botones_respuesta.append(btn)
+        es_correcta = (opcion == respuesta_correcta)
+        btn_color = color_base
+        comando = (lambda r=opcion: mostrar_respuesta_correcta(r, ventana, color_base)) if es_correcta else (
+                lambda v=ventana: mostrar_respuesta_incorrecta(v, color_base))
 
-    for i, btn in enumerate(botones_respuesta):
-        row = i // 2
-        col = i % 2
+        btn = tk.Button(
+            frame_respuestas, 
+            text=opcion,
+            font=("Helvetica", 14),
+            bg=btn_color,
+            fg="white",
+            padx=20,
+            pady=10,
+            command=comando
+        )
+        row, col = divmod(i, 2)
         btn.grid(row=row, column=col, padx=15, pady=15, sticky="nsew")
 
-    frame_respuestas.grid_rowconfigure(0, weight=1)
-    frame_respuestas.grid_rowconfigure(1, weight=1)
-    frame_respuestas.grid_columnconfigure(0, weight=1)
-    frame_respuestas.grid_columnconfigure(1, weight=1)
+
+    for i in range(2):
+        frame_respuestas.grid_rowconfigure(i, weight=1)
+        frame_respuestas.grid_columnconfigure(i, weight=1)
 
     tk.Button(frame_principal, text="Cerrar", font=("Helvetica", 14),
-              bg="#4D96FF", fg="white",
+              bg=color_base, fg="white",
               command=ventana.destroy).pack(pady=20)
 
-def mostrar_respuesta_correcta(respuesta, ventana):
+
+def mostrar_respuesta_correcta(respuesta, ventana, color_base):
     popup = tk.Toplevel(ventana)
     popup.title("¡Respuesta Correcta!")
     centrar_ventana(popup, 600, 350)
@@ -139,7 +249,7 @@ def mostrar_respuesta_correcta(respuesta, ventana):
 
     tk.Label(popup, text="¡Correcto!", 
              font=("Helvetica", 26, "bold"), 
-             bg="#F4F4F4", fg="#6BCB77").pack(pady=20)
+             bg="#F4F4F4", fg="#4CD15E").pack(pady=20)
 
     tk.Label(popup, text="La respuesta es:", 
              font=("Helvetica", 18), 
@@ -150,10 +260,10 @@ def mostrar_respuesta_correcta(respuesta, ventana):
              bg="#F4F4F4", fg="#333").pack(pady=20)
 
     tk.Button(popup, text="Cerrar", font=("Helvetica", 14),
-              bg="#4D96FF", fg="white",
+              bg=color_base, fg="white",
               command=popup.destroy).pack(pady=20)
 
-def mostrar_respuesta_incorrecta(ventana):
+def mostrar_respuesta_incorrecta(ventana, color_base):
     popup = tk.Toplevel(ventana)
     popup.title("¡Respuesta Incorrecta!")
     centrar_ventana(popup, 600, 350)
@@ -161,14 +271,14 @@ def mostrar_respuesta_incorrecta(ventana):
 
     tk.Label(popup, text="¡Incorrecto!", 
              font=("Helvetica", 24, "bold"), 
-             bg="#F4F4F4", fg="#FF6B6B").pack(pady=20)
+             bg="#F4F4F4", fg="#FA4343").pack(pady=20)
 
     tk.Label(popup, text="Intenta de nuevo.", 
              font=("Helvetica", 16), 
              bg="#F4F4F4").pack(pady=10)
 
     tk.Button(popup, text="Cerrar", font=("Helvetica", 14),
-              bg="#4D96FF", fg="white",
+              bg=color_base, fg="white",
               command=popup.destroy).pack(pady=20)
 
 if __name__ == "__main__":

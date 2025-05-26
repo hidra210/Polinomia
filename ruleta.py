@@ -2,6 +2,10 @@ import tkinter as tk
 import math
 import preguntas
 import tkinter.font as tkFont
+from PIL import Image, ImageTk
+import os
+import random
+
 
 # Operaciones disponibles para la ruleta
 operaciones = [
@@ -12,7 +16,20 @@ operaciones = [
     "Factorizar",
     "Evaluar"
 ]
-colores = ["#FF8C42", "#FFD93D", "#6BCB77", "#4D96FF", "#DD4EBE", "#FF6B6B"]
+colores = ["#FF8C42", "#FECE2F", "#4ABC59", "#4D96FF", "#DD4EBE", "#FF6B6B"]
+
+# Datos aleatorios sobre Baldor
+DATOS_BALDOR = [
+    "El libro se publicó por primera vez en 1941",
+    "La imagen de la portada es de Al-Juarismi, un matemático persa del siglo IX, considerado el padre del álgebra",
+    "Baldor también escribió 'Aritmética de Baldor' y 'Geometría plana y del espacio y Trigonometría de Baldor'",
+    "Baldor se considera la primera persona que puso las funciones algebraicas al alcance de todos",
+    "Aurelio Baldor fue un matemático, profesor, escritor y abogado cubano",
+    "El libro contiene más de 5790 ejercicios",
+    "El método de Baldor: Se basa en la práctica y la repetición de ejercicios para afianzar los conceptos",
+    "El libro sigue siendo un referente en la enseñanza de álgebra a día de hoy"
+]
+
 
 # Tkinter setup
 root = tk.Tk()
@@ -54,7 +71,28 @@ canvas_size = 600
 canvas = tk.Canvas(root, width=canvas_size, height=canvas_size, bg="#F4F4F4", highlightthickness=0)
 canvas.pack(pady=0)
 
-# Estado
+# Capa flotante para imagen y texto
+imagen_frame = tk.Frame(root, bg="#F4F4F4")
+imagen_frame.place(relx=1.0, rely=0.5, anchor="e", x=-70)  # derecha centrada verticalmente
+
+# Imagen de Baldor
+try:
+    ruta_imagen = os.path.join("Images", "Baldor.png")
+    img = Image.open(ruta_imagen)
+    img = img.resize((330, 440))
+    baldor_img = ImageTk.PhotoImage(img)
+    img_label = tk.Label(imagen_frame, image=baldor_img, bg="#F4F4F4")
+    img_label.image = baldor_img
+    img_label.pack(pady=(0, 10))
+except Exception as e:
+    tk.Label(imagen_frame, text=e, bg="#F4F4F4", fg="red").pack()
+
+# Dato aleatorio
+dato = random.choice(DATOS_BALDOR)
+dato_label = tk.Label(imagen_frame, text=dato, wraplength=330, justify="center",
+                      font=("Segoe UI", 12), bg="#F4F4F4", fg="#333")
+dato_label.pack()
+
 secciones = len(operaciones)
 angulo_seccion = 360 / secciones
 girando = False

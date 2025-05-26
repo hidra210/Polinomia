@@ -18,7 +18,7 @@ def multiplicar_polinomios(p1, p2):
 
 def generar_polinomio(max_grado=4, raiz_min=-5, raiz_max=5):
     """Genera un polinomio con raíces enteras, factores (x - r) reales, coef principal = 1."""
-    grado = random.randint(1, max_grado)
+    grado = random.randint(2, max_grado)
     raices = [random.randint(raiz_min, raiz_max) for _ in range(grado)]
     polinomio = [1]  # coeficientes de menor a mayor grado
     for r in raices:
@@ -56,6 +56,11 @@ def ejecutar_haskell(coefs, operacion, x=None):
             resultados['raices'] = linea.split(':', 1)[1].strip()
         elif 'Factorizar:' in linea:
             resultados['factorizacion'] = linea.split(':', 1)[1].strip()
+        elif 'Divisor usado:' in linea:
+            try:
+                resultados['divisor'] = float(linea.split(':', 1)[1].strip())
+            except:
+                resultados['divisor'] = 0
         elif 'Cociente:' in linea:
             resultados['cociente'] = linea.split(':', 1)[1].strip()
         elif 'Resto:' in linea:
@@ -68,6 +73,12 @@ def ejecutar_haskell(coefs, operacion, x=None):
             idx = linea.rfind(':')
             if idx != -1 and idx + 1 < len(linea):
                 resultados['evaluacion'] = linea[idx+1:].strip()
+        elif 'Grado:' in linea:
+            try:
+                resultados['grado'] = int(linea.split(':', 1)[1].strip())
+            except:
+                resultados['grado'] = 0
+
 
     return resultados
 
