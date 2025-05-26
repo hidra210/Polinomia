@@ -1,23 +1,52 @@
-dist
-dist-*
-cabal-dev
-*.o
+# Archivos específicos de Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+venv/
+env/
+.venv/
+
+# Archivos de Haskell
 *.hi
-*.hie
-*.chi
-*.chs.h
+*.o
 *.dyn_o
 *.dyn_hi
-.hpc
-.hsenv
-.cabal-sandbox/
-cabal.sandbox.config
+cabal-dev/
+dist-newstyle/
+.stack-work/
 *.prof
 *.aux
 *.hp
 *.eventlog
-.stack-work/
-cabal.project.local
-cabal.project.local~
-.HTF/
-.ghc.environment.*
+
+# Ejecutables y binarios
+polinomio       # Nombre del ejecutable Haskell (si lo generas)
+*.exe           # Para Windows
+
+# Archivos de IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos generados por el programa
+*.log
+*.tmp
+
+# Archivos de datos temporales (si los hay)
+*.csv
+*.dat
+
+# Configuración local (credenciales, etc.)
+config.json
+.env
+secrets.*
