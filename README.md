@@ -52,7 +52,28 @@ pip install pillow
 ```bash
 ghc -o polinomio PF_Practica4.hs
 ```
-### 2. Ejecutar ruleta.py
+### 2. Ejecutar polinomio
+```bash
+./polinomio
+```
+### 3. Escribir las entradas del programa: 
+1) Primera línea: Coeficientes del polinomio, separados por espacios (de menor a mayor grado).
+2) Segunda línea: Nombre de la operación (raices, dividir, derivar, integrar, factorizar, evaluar).
+3) Tercera línea (Opcional): Un número si se requiere (por ejemplo, valor de x para evaluar o dividir).
+
+- Ejemplo de uso 1: Evaluar 𝑝 ( 𝑥 ) = 1 + 2𝑥 + 3𝑥² en 𝑥 = 2 
+```bash
+1 2 3
+evaluar
+2
+```
+
+- Ejemplo de uso 2: Derivar 𝑝 ( 𝑥 ) = 1 + 2𝑥 + 3𝑥²
+```bash
+1 2 3
+derivar
+```
+### 4. Ejecutar ruleta.py para utilizar la IU
 
 ```bash
 python ruleta.py
