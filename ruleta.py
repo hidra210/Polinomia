@@ -87,6 +87,13 @@ try:
 except Exception as e:
     tk.Label(imagen_frame, text=e, bg="#F4F4F4", fg="red").pack()
 
+def contador(aciertos):
+    contador_frame = tk.Frame(root, bg="#F4F4F4")
+    contador_frame.place(relx=1.0, rely=0.5, anchor="e", x=-1250)
+    contador_label = tk.Label(contador_frame, text=f"contador{aciertos}", wraplength=330, justify="center",
+                      font=("Segoe UI", 12), bg="#F4F4F4", fg="#333")
+    contador_label.pack()
+
 # Dato aleatorio
 dato = random.choice(DATOS_BALDOR)
 dato_label = tk.Label(imagen_frame, text=dato, wraplength=330, justify="center",
@@ -142,6 +149,8 @@ def animar_ruleta():
 
     angulo_flecha = (angulo_flecha + velocidad) % 360
     dibujar_ruleta(angulo_flecha)
+    from preguntas import lista_juego
+    contador(lista_juego[0])
 
     if detener:
         velocidad = max(0.3, velocidad - 0.15)
@@ -182,5 +191,6 @@ def determinar_operacion():
     preguntas.mostrar_pregunta(operacion, root)
 
 # Inicial
+contador(0)
 dibujar_ruleta(angulo_seccion / 2)
 root.mainloop()

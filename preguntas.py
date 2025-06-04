@@ -3,6 +3,8 @@ from tkinter import messagebox
 import respuesta
 import random
 
+lista_juego = [0]
+
 # Colores de los botones de cada operación
 OPERACIONES = [
     "Raíces",
@@ -14,7 +16,6 @@ OPERACIONES = [
 ]
 COLORES = ["#FF8C42", "#FFE816", "#6BCB77", "#4D96FF", "#DD4EBE", "#FF6B6B"]
 COLOR_MAPA = dict(zip(OPERACIONES, COLORES))
-
 
 # Respuestas incorrectas predefinidas por tipo de operación
 RESPUESTAS_INCORRECTAS = {
@@ -242,6 +243,7 @@ def mostrar_pregunta(operacion, parent_window):
 
 
 def mostrar_respuesta_correcta(respuesta, ventana, color_base):
+    lista_juego[0] += 1
     popup = tk.Toplevel(ventana)
     popup.title("¡Respuesta Correcta!")
     centrar_ventana(popup, 600, 350)
@@ -264,6 +266,7 @@ def mostrar_respuesta_correcta(respuesta, ventana, color_base):
               command=popup.destroy).pack(pady=20)
 
 def mostrar_respuesta_incorrecta(ventana, color_base):
+    lista_juego[0] = 0
     popup = tk.Toplevel(ventana)
     popup.title("¡Respuesta Incorrecta!")
     centrar_ventana(popup, 600, 350)
@@ -284,5 +287,6 @@ def mostrar_respuesta_incorrecta(ventana, color_base):
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
+    aciertos = 0
     mostrar_pregunta("Derivar", root)
     root.mainloop()
