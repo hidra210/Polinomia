@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import respuesta
 import random
+# from ruleta import contador
 
 lista_juego = [0]
 
@@ -237,9 +238,15 @@ def mostrar_pregunta(operacion, parent_window):
         frame_respuestas.grid_rowconfigure(i, weight=1)
         frame_respuestas.grid_columnconfigure(i, weight=1)
 
-    tk.Button(frame_principal, text="Cerrar", font=("Helvetica", 14),
+    cerrar_ventana(frame_principal, color_base, ventana).pack(pady=20)
+    
+
+def cerrar_ventana(frame_principal, color_base, ventana):
+    from ruleta import contador
+    contador(lista_juego[0])
+    return tk.Button(frame_principal, text="Cerrar", font=("Helvetica", 14),
               bg=color_base, fg="white",
-              command=ventana.destroy).pack(pady=20)
+              command=ventana.destroy)
 
 
 def mostrar_respuesta_correcta(respuesta, ventana, color_base):
@@ -261,9 +268,7 @@ def mostrar_respuesta_correcta(respuesta, ventana, color_base):
              font=("Helvetica", 16, "bold"), 
              bg="#F4F4F4", fg="#333").pack(pady=20)
 
-    tk.Button(popup, text="Cerrar", font=("Helvetica", 14),
-              bg=color_base, fg="white",
-              command=popup.destroy).pack(pady=20)
+    cerrar_ventana(popup, color_base, popup).pack(pady=20)
 
 def mostrar_respuesta_incorrecta(ventana, color_base):
     lista_juego[0] = 0
@@ -279,14 +284,11 @@ def mostrar_respuesta_incorrecta(ventana, color_base):
     tk.Label(popup, text="Intenta de nuevo.", 
              font=("Helvetica", 16), 
              bg="#F4F4F4").pack(pady=10)
-
-    tk.Button(popup, text="Cerrar", font=("Helvetica", 14),
-              bg=color_base, fg="white",
-              command=popup.destroy).pack(pady=20)
+    
+    cerrar_ventana(popup, color_base, popup).pack(pady=20)
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
-    aciertos = 0
     mostrar_pregunta("Derivar", root)
     root.mainloop()
