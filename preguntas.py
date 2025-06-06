@@ -241,12 +241,18 @@ def mostrar_pregunta(operacion, parent_window):
     cerrar_ventana(frame_principal, color_base, ventana).pack(pady=20)
     
 
-def cerrar_ventana(frame_principal, color_base, ventana):
+def cerrar_ventana(frame_padre, color_base, *ventanas_a_cerrar):
     from ruleta import contador
     contador(lista_juego[0])
-    return tk.Button(frame_principal, text="Cerrar", font=("Helvetica", 14),
-              bg=color_base, fg="white",
-              command=ventana.destroy)
+    return tk.Button(
+        frame_padre, 
+        text="Cerrar", 
+        font=("Helvetica", 14),
+        bg=color_base, 
+        fg="white",
+        command=lambda: [v.destroy() for v in ventanas_a_cerrar]
+    )
+
 
 
 def mostrar_respuesta_correcta(respuesta, ventana, color_base):
@@ -268,7 +274,8 @@ def mostrar_respuesta_correcta(respuesta, ventana, color_base):
              font=("Helvetica", 16, "bold"), 
              bg="#F4F4F4", fg="#333").pack(pady=20)
 
-    cerrar_ventana(popup, color_base, popup).pack(pady=20)
+    cerrar_ventana(popup, color_base, popup, ventana).pack(pady=20)
+
 
 def mostrar_respuesta_incorrecta(ventana, color_base):
     lista_juego[0] = 0
@@ -286,6 +293,7 @@ def mostrar_respuesta_incorrecta(ventana, color_base):
              bg="#F4F4F4").pack(pady=10)
     
     cerrar_ventana(popup, color_base, popup).pack(pady=20)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
