@@ -4,7 +4,7 @@ import respuesta
 import random
 # from ruleta import contador
 
-lista_juego = [0]
+lista_juego = [0, 0]
 
 # Colores de los botones de cada operación
 OPERACIONES = [
@@ -243,7 +243,7 @@ def mostrar_pregunta(operacion, parent_window):
 
 def cerrar_ventana(frame_padre, color_base, *ventanas_a_cerrar):
     from ruleta import contador
-    contador(lista_juego[0])
+    contador(lista_juego[0], lista_juego[1])
     return tk.Button(
         frame_padre, 
         text="Cerrar", 
@@ -256,8 +256,11 @@ def cerrar_ventana(frame_padre, color_base, *ventanas_a_cerrar):
 
 
 def mostrar_respuesta_correcta(respuesta, ventana, color_base):
+    
     lista_juego[0] += 1
-    popup = tk.Toplevel(ventana)
+    lista_juego[1] = lista_juego[0] if lista_juego[0]>lista_juego[1] else lista_juego[1]
+    ventana.destroy()
+    popup = tk.Toplevel()
     popup.title("¡Respuesta Correcta!")
     centrar_ventana(popup, 600, 350)
     popup.configure(bg="#F4F4F4")
@@ -274,7 +277,7 @@ def mostrar_respuesta_correcta(respuesta, ventana, color_base):
              font=("Helvetica", 16, "bold"), 
              bg="#F4F4F4", fg="#333").pack(pady=20)
 
-    cerrar_ventana(popup, color_base, popup, ventana).pack(pady=20)
+    cerrar_ventana(popup, color_base, popup).pack(pady=20)
 
 
 def mostrar_respuesta_incorrecta(ventana, color_base):

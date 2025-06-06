@@ -49,11 +49,11 @@ canvas = None
 boton_girar = None
 boton_detener = None
 
-def contador(aciertos):
+def contador(aciertos, record):
     contador_frame = tk.Frame(root, bg="#F4F4F4")
     contador_frame.place(relx=1.0, rely=0.5, anchor="e", x=-1200)
     emoji = next((v for k, v in emojis.items() if aciertos in k), "😱")
-    contador_label = tk.Label(contador_frame, text=f"🔢 Contador aciertos: 🔢\n {emoji} {aciertos} {emoji} ", wraplength=330, justify="center",
+    contador_label = tk.Label(contador_frame, text=f"🔢 Contador aciertos: 🔢\n {emoji} {aciertos} {emoji} \n Record: {record}", wraplength=330, justify="center",
                       font=("Segoe UI", 20), bg="#F4F4F4", fg="#333")
     contador_label.pack()
 
@@ -134,7 +134,7 @@ def determinar_operacion():
     preguntas.mostrar_pregunta(operacion, root)
 
 def init(raiz):
-    contador(0)
+    contador(0, 0)
     dibujar_ruleta(angulo_seccion / 2)
     raiz.mainloop()
 
