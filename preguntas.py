@@ -161,7 +161,7 @@ def mostrar_pregunta(operacion, parent_window):
     frame_principal.pack(expand=True, fill='both', padx=20, pady=20)
 
     tk.Label(frame_principal, text=f"Polinomio: {resultados['polinomio']}", 
-             font=("Helvetica", 14), bg="#F4F4F4").pack(pady=15)
+             font=("Segoe UI", 14), bg="#F4F4F4").pack(pady=15)
 
     if operacion == "Raíces":
         pregunta = "Encuentra las raíces del polinomio:"
@@ -203,7 +203,7 @@ def mostrar_pregunta(operacion, parent_window):
         pregunta = "¿Cuál es el resultado?"
         respuesta_correcta = "?"
 
-    tk.Label(frame_principal, text=pregunta, font=("Helvetica", 16, "bold"), 
+    tk.Label(frame_principal, text=pregunta, font=("Segoe UI", 16, "bold"), 
              bg="#F4F4F4").pack(pady=20)
 
     frame_respuestas = tk.Frame(frame_principal, bg="#F4F4F4")
@@ -223,7 +223,7 @@ def mostrar_pregunta(operacion, parent_window):
         btn = tk.Button(
             frame_respuestas, 
             text=opcion,
-            font=("Helvetica", 14),
+            font=("Segoe UI", 14),
             bg=btn_color,
             fg="white",
             padx=20,
@@ -247,7 +247,7 @@ def cerrar_ventana(frame_padre, color_base, *ventanas_a_cerrar):
     return tk.Button(
         frame_padre, 
         text="Cerrar", 
-        font=("Helvetica", 14),
+        font=("Segoe UI", 14),
         bg=color_base, 
         fg="white",
         command=lambda: [v.destroy() for v in ventanas_a_cerrar]
@@ -266,15 +266,15 @@ def mostrar_respuesta_correcta(respuesta, ventana, color_base):
     popup.configure(bg="#F4F4F4")
 
     tk.Label(popup, text="¡Correcto!", 
-             font=("Helvetica", 26, "bold"), 
+             font=("Segoe UI", 26, "bold"), 
              bg="#F4F4F4", fg="#4CD15E").pack(pady=20)
 
     tk.Label(popup, text="La respuesta es:", 
-             font=("Helvetica", 18), 
+             font=("Segoe UI", 18), 
              bg="#F4F4F4").pack(pady=10)
 
     tk.Label(popup, text=respuesta, 
-             font=("Helvetica", 16, "bold"), 
+             font=("Segoe UI", 16, "bold"), 
              bg="#F4F4F4", fg="#333").pack(pady=20)
 
     cerrar_ventana(popup, color_base, popup).pack(pady=20)
@@ -288,11 +288,11 @@ def mostrar_respuesta_incorrecta(ventana, color_base):
     popup.configure(bg="#F4F4F4")
 
     tk.Label(popup, text="¡Incorrecto!", 
-             font=("Helvetica", 24, "bold"), 
+             font=("Segoe UI", 24, "bold"), 
              bg="#F4F4F4", fg="#FA4343").pack(pady=20)
 
     tk.Label(popup, text="Intenta de nuevo.", 
-             font=("Helvetica", 16), 
+             font=("Segoe UI", 16), 
              bg="#F4F4F4").pack(pady=10)
     
     cerrar_ventana(popup, color_base, popup).pack(pady=20)

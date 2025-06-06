@@ -77,7 +77,7 @@ def dibujar_ruleta(angulo):
         text_y = centro_y - (radio / 1.6) * math.sin(angle)
 
         canvas.create_text(text_x, text_y, text=texto,
-                           fill="white", font=("Helvetica", 14, "bold"),
+                           fill="white", font=("Segoe UI", 14, "bold"),
                            justify="center", anchor="center")
 
     flecha_x1 = centro_x + (radio - 20) * math.cos(math.radians(angulo))
@@ -153,19 +153,19 @@ def main():
     root.configure(bg="#F4F4F4")
     root.resizable(False, False)
 
-    titulo = tk.Label(root, text="🎓 Polinomia 🎓", font=("Helvetica", 20, "bold"),
+    titulo = tk.Label(root, text="🎓 Polinomia 🎓", font=("Segoe UI", 20, "bold"),
                       bg="#F4F4F4", fg="#333")
     titulo.pack(pady=10)
 
     frame_botones = tk.Frame(root, bg="#F4F4F4")
     frame_botones.pack(pady=25)
 
-    boton_girar = tk.Button(frame_botones, text="🎡 Girar Ruleta", font=("Helvetica", 16, "bold"),
+    boton_girar = tk.Button(frame_botones, text="🎡 Girar Ruleta", font=("Segoe UI", 16, "bold"),
                             bg="#4D96FF", fg="white", activebackground="#3C7DD9",
                             padx=30, pady=15, command=girar)
     boton_girar.pack(side="left", padx=15)
 
-    boton_detener = tk.Button(frame_botones, text="✋ Detener", font=("Helvetica", 16, "bold"),
+    boton_detener = tk.Button(frame_botones, text="✋ Detener", font=("Segoe UI", 16, "bold"),
                               bg="#FF6B6B", fg="white", activebackground="#E04A4A",
                               padx=30, pady=15, command=detener_giro, state="disabled")
     boton_detener.pack(side="left", padx=15)

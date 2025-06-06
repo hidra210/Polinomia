@@ -75,9 +75,9 @@ valor p c
     r = restoPol p
 
 sumaPol :: (Num a, Eq a) => Polinomio a -> Polinomio a -> Polinomio a
+sumaPol PolCero q = q
+sumaPol p PolCero = p
 sumaPol p q
-    | esPolCero p = q
-    | esPolCero q = p
     | n1 > n2     = pegarPol n1 a1 (sumaPol r1 q)
     | n1 < n2     = pegarPol n2 a2 (sumaPol p r2)
     | a1+a2 /= 0  = pegarPol n1 (a1+a2) (sumaPol r1 r2)
@@ -98,12 +98,16 @@ derivar (ConsPol n b p) = pegarPol (n-1) (fromIntegral n * b) (derivar p)
 multiplicarPol :: (Num a, Eq a) => Polinomio a -> Polinomio a -> Polinomio a
 multiplicarPol PolCero _ = PolCero
 multiplicarPol _ PolCero = PolCero
-multiplicarPol p q = sumaPol (multiplicarTermino p q) (multiplicarPol (restoPol p) q)
+multiplicarPol p q = foldr (sumaPol . multiplicarTermino p) PolCero (terminos q)
   where
-    multiplicarTermino PolCero _ = PolCero
-    multiplicarTermino (ConsPol n b p') q' =
-        sumaPol (foldr (\(m, c) acc -> pegarPol (n + m) (b * c) acc) PolCero (toLista q'))
-                (multiplicarTermino p' q')
+    terminos PolCero = []
+    terminos pol = (grado pol, coefPral pol) : terminos (restoPol pol)
+
+multiplicarTermino :: (Num a, Eq a) => Polinomio a -> (Int, a) -> Polinomio a
+multiplicarTermino PolCero _ = PolCero
+multiplicarTermino p (n, c) = 
+    foldr (\(m, b) acc -> pegarPol (n + m) (c * b) acc) PolCero (toLista p)
+
 
 toLista :: Polinomio a -> [(Int, a)]
 toLista PolCero = []
